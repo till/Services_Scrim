@@ -41,6 +41,7 @@
    <dir name="tests">
     <file role="test" baseinstalldir="Services_Scrim" name="Services_ScrimTestCase.php" />
    </dir> <!-- /tests -->
+   <file role="doc" baseinstalldir="Services_Scrim" name="README.markdown" />
   </dir> <!-- / -->
  </contents>
  <dependencies>
@@ -54,7 +55,7 @@
    <package>
     <name>HTTP_Request2</name>
     <channel>pear.php.net</channel>
-    <min>0.3.0</min>
+    <min>0.1.0</min>
    </package>
   </required>
  </dependencies>
