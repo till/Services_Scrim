@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2009 Till Klampaeckel
+ * Copyright (c) 2009-2011 Till Klampaeckel
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -61,7 +61,7 @@ class Services_Scrim
 
     /**
      * @var HTTP_Request2 $httpRequest
-     */    
+     */
     protected $httpRequest;
 
     /**
@@ -188,7 +188,7 @@ class Services_Scrim
      */
     protected function parseResponse(HTTP_Request2_Response $response)
     {
-        $body   = $response->getBody();
+        $body   = trim($response->getBody());
         $status = (int) $response->getStatus();
 
         // scr.im's a bit of a sucky api. It doesn't adhere to the usual REST/HTTP
@@ -198,9 +198,17 @@ class Services_Scrim
             throw new UnexpectedValueException('scr.im is currently down.');
         }
 
-        $obj = @simplexml_load_string($body);
+        // handle errors ourselves
+        libxml_use_internal_errors(true);
+        $obj = simplexml_load_string($body);
+
         if ($obj === false){
-            throw new LogicException("Could not parse scr.im's XML response.");
+            $msg    = '';
+            foreach (libxml_get_errors() as $error) {
+                $msg .= "{$error->message}, ";
+            }
+            libxml_clear_errors();
+            throw new LogicException("Could not parse scr.im's XML response: {$body}, error: {$msg}");
         }
 
         $result = (string) $obj->result;
@@ -258,7 +266,10 @@ class Services_Scrim
      */
     public static function autoload($className)
     {
-        $file = dirname(dirname(__FILE__))
+        if (substr($className, 0, 14) != 'Services_Scrim') {
+            return false;
+        }
+        $file = dirname(__DIR__)
             . '/' . str_replace('_', '/', $className) . '.php';
         return require $file;
     }

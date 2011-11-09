@@ -1,6 +1,6 @@
 <?php
 /**
- * Copyright (c) 2009 Till Klampaeckel
+ * Copyright (c) 2009-2011 Till Klampaeckel
  *
  * Permission is hereby granted, free of charge, to any person obtaining
  * a copy of this software and associated documentation files (the
@@ -49,7 +49,7 @@ require_once 'Services/Scrim.php';
 class Services_ScrimTestCase extends PHPUnit_Framework_TestCase
 {
     protected $obj;
-    
+
     public function setUp()
     {
         $this->obj = new Services_Scrim;
@@ -58,7 +58,7 @@ class Services_ScrimTestCase extends PHPUnit_Framework_TestCase
     public static function emailProvider()
     {
         return array(
-            array(mktime() . '@example.org', false, null),
+            array(time() . '@example.org', false, null),
             array('foobar@example.org', true, 'foobarscrim'),
             array('foo@example.org', true, 'foo'),
         );
@@ -78,14 +78,14 @@ class Services_ScrimTestCase extends PHPUnit_Framework_TestCase
     public function testScrim($email, $old, $scrim = null)
     {
         if ($scrim === null) {
-            $scrim = 'ss' . mktime();
+            $scrim = 'ss' . time();
         }
 
         $this->obj->setScrim($scrim);
         $this->obj->setEmail($email);
 
         $response = $this->obj->generate();
-        
+
         $url = 'http://scr.im/' . $scrim;
 
         $newScrim = $response->getScrim();
